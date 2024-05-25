@@ -13,4 +13,5 @@ public class Constants {
 
     public static final String MANAGER_AUTHORITIES = "document:create,document:read,document:update,document:delete";
 
+    public static final String EMPTY_STRING = "";
 }

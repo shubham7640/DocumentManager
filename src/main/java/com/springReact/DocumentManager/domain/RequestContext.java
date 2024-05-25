@@ -12,4 +12,9 @@ public class RequestContext {
     public static void setUserId(Long userId){
         USER_ID.set(userId);
     }
+
+    public static void start()
+    {
+        USER_ID.remove();
+    }
 }

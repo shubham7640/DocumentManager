@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@Builder //Simplify Object creation
+@Builder //Simplify Object creation by directly using builder and build method(See UserUtil class for details of implementation)
 @AllArgsConstructor
 @NoArgsConstructor
 @Table (name = "Users")
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class UserEntity extends Auditable{
 
     @Column(updatable = false,unique = true,nullable = false)
-    private String userId;
+    private String userId; //Will be randomly generated during user creation
 
     private String firstName;
 
@@ -46,7 +46,7 @@ public class UserEntity extends Auditable{
     @JsonIgnore
     private String qrCodeSecret;
 
-    @Column(columnDefinition = "TEXT") // when we are unsure about length
+    @Column(columnDefinition = "text") // when we are unsure about length
     //We can use @Lob instead which will represent both Text and Longtext
     private String qrCodeSecretUrl;
 
