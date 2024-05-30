@@ -10,7 +10,7 @@ public class EmailUtil {
 
     public static String getVerificationUrl( String host, String token)
     {
-        return host + "/verify/account?token=" + token;
+        return host + "/user/verify/account?token=" + token;
 
     }
 

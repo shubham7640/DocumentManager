@@ -1,9 +1,8 @@
 package com.springReact.DocumentManager.util;
 
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
+
 import com.springReact.DocumentManager.entity.RoleEntity;
 import com.springReact.DocumentManager.entity.UserEntity;
-import org.antlr.v4.runtime.atn.SemanticContext;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -23,6 +22,7 @@ public class UserUtil {
                 .accountNonExpired(false)
                 .accountNonLocked(false)
                 .enabled(false)
+                .mfa(false)
                 .loginAttempts(0)
                 .qrCodeSecret(EMPTY_STRING) //TODO: they have imported apche commons dependency but not required at the moment
                 .phone(EMPTY_STRING)

@@ -29,12 +29,12 @@ public class DocumentManagerApplication {
 			var userRole = new RoleEntity();
 			userRole.setRoleName(Authority.USER.name());
 			userRole.setAuthorites(Authority.USER);
-			roleRepository.save(userRole);
+//			roleRepository.save(userRole);
 
 			var adminRole = new RoleEntity();
 			adminRole.setRoleName(Authority.ADMIN.name());
 			adminRole.setAuthorites(Authority.ADMIN);
-			roleRepository.save(adminRole);
+//			roleRepository.save(adminRole);
 
 			RequestContext.start();
 

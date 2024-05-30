@@ -19,8 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -70,6 +69,23 @@ public class UserServiceImpl implements UserService {
     public RoleEntity getRoleName(String name) {
         var role = roleRepository.findByRoleNameIgnoreCase(name);
         return role.orElseThrow(()->new ApiException("Role not found"));
+    }
+
+    @Override
+    public void verifyAccountToken(String token) {
+        var confirmationEntity = getUserConfirmation(token);
+        var userEntity = getUserEntityByEmail(confirmationEntity.getUserEntity().getEmail());
+        userEntity.setEnabled(true);
+        userRepository.save(userEntity);
+        confirmationRepository.delete(confirmationEntity);
+    }
+
+    private UserEntity getUserEntityByEmail(String email) {
+        return userRepository.findByEmailIgnoreCase(email).orElseThrow(()->new ApiException("User Email Not found"));
+    }
+
+    private ConfirmationEntity getUserConfirmation(String token) {
+        return confirmationRepository.findBykey(token).orElseThrow(()->new ApiException("Token Not found or expired"));
     }
 
     private UserEntity createNewUser(String firstName,String lastName, String email)

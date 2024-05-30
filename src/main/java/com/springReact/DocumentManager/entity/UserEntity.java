@@ -43,6 +43,9 @@ public class UserEntity extends Auditable{
 
     private boolean enabled;
 
+    @Column(nullable = true)
+    private boolean mfa;
+
     @JsonIgnore
     private String qrCodeSecret;
 

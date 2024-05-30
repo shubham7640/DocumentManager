@@ -10,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -33,6 +30,19 @@ public class UserController {
         userService.createUser(userRequest.getFirstName(),userRequest.getLastName(),userRequest.getEmail(),userRequest.getPassword());
         return ResponseEntity.created(getUri()).body(RequestUtil.getResponse(httpServletRequest,emptyMap(),"Account Created. Please check your email to enable your account", HttpStatus.CREATED));
 
+    }
+
+    @GetMapping("/verify/account")
+    public ResponseEntity<Response> saveUser(@RequestParam("token") String token, HttpServletRequest httpServletRequest)
+    {
+        try {
+            userService.verifyAccountToken(token);
+            return ResponseEntity.ok().body(RequestUtil.getResponse(httpServletRequest, emptyMap(), "Account Verified.", HttpStatus.OK));
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(RequestUtil.getResponse(httpServletRequest, emptyMap(), e.getMessage(), HttpStatus.BAD_REQUEST));
+        }
     }
 
     private URI getUri()

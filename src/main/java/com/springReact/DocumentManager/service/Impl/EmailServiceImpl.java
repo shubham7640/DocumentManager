@@ -31,6 +31,8 @@ public class EmailServiceImpl implements EmailService {
     @Async
     public void sendNewAccountEmail(String name, String toEmail, String token) {
         try {
+            // We can create MimeMessage object instead of simple mail message
+            // to add html content/attachment in the mail body
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
             simpleMailMessage.setSubject(NEW_USER_ACCOUNT_VERIFICATION);
             simpleMailMessage.setFrom(fromEmail);

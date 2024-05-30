@@ -56,10 +56,11 @@ public abstract class Auditable {
 
     @PrePersist
     public void beforePersist() {
-        var userId = RequestContext.getUserId();
-        if(userId==null){
-            throw new ApiException("Cannot persist entity without user Id in request context for this thread");
-        }
+        var userId = 0L;//RequestContext.getUserId();
+//        if(userId==null){
+//            throw new ApiException("Cannot persist entity without user Id in request context for this thread");
+//        }
+//        TODO : Revert the above changes when request comes from UI
         setCreatedBy(userId);
         setUpdatedBy(userId);
         setCreatedAt(LocalDateTime.now());
@@ -68,10 +69,11 @@ public abstract class Auditable {
 
     @PreUpdate
     public void beforeUpdate() {
-        var userId = RequestContext.getUserId();
-        if(userId==null){
-            throw new ApiException("Cannot update entity without user Id in request context for this thread");
-        }
+        //TODO : uncomment when UI is enabled in both methods
+        var userId = 0L;//RequestContext.getUserId();
+//        if(userId==null){
+//            throw new ApiException("Cannot update entity without user Id in request context for this thread");
+//        }
 
         setUpdatedBy(userId);
         setUpdatedAt(LocalDateTime.now());
