@@ -33,34 +33,48 @@ public class FilterChainConfiguration {
 //                request -> request.requestMatchers("/user/test").permitAll()
                 // We can use "/user/**" to ignore authentication for all endpoints starting with /user
                 // Please not by default /login and /logout are open and do not need authentication
-                        request -> request.requestMatchers("/user/login").permitAll()
+                        request -> request.requestMatchers("/user/**").permitAll()
                         .anyRequest().authenticated())
                 .build();
     }
 
+//    @Bean
+//    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
+//        // DaoAuthenticationProvider is the default authentication Provider
+//        // This is invoked via Authentication Manager named ProviderManager
+//        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+////        Please note here we are using static user details set using userDetailsService bean
+//        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+//        //The userDetailsService bean will be picked directly from constructor declaration below
+//        return new ProviderManager(daoAuthenticationProvider);
+//    }
+
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
-        // DaoAuthenticationProvider is the default authentication Provider
-        // This is invoked via Authentication Manager named ProviderManager
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-//        Please note here we are using static user details set using userDetailsService bean
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-        //The userDetailsService bean will be picked directly from constructor declaration below
-        return new ProviderManager(daoAuthenticationProvider);
+        MyOwnAuthenticationProvider myOwnAuthenticationProvider = new MyOwnAuthenticationProvider(userDetailsService);
+        return new ProviderManager(myOwnAuthenticationProvider);
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        var user1 = User.withDefaultPasswordEncoder()
-                .username("Kashyap")
+        var user1 = //User.withDefaultPasswordEncoder()
+                User.withUsername("Kashyap") // Created user without password encoding
                 .password("Krishna")
                 .roles("USER")
                 .build();
-        var user2 = User.withDefaultPasswordEncoder()
+        var user2 = User.withDefaultPasswordEncoder() // Created user with password encoding
                 .username("Radhe")
-                .password("Krishna")
+                .password("{noop}Krishna")//TODO : check how can we block password encoding
                 .roles("USER")
                 .build();
         return new InMemoryUserDetailsManager(List.of(user1,user2));
     }
+
+//    @Bean
+//    public UserDetailsService inMemoryUserDetailsManager() {
+//        return new InMemoryUserDetailsManager(
+//            User.withUsername("Kashyap").password("Krishna").roles("USER").build(),
+//            User.withUsername("Radhe").password("Krishna").roles("USER").build()
+//        );
+//    }
 }

@@ -29,8 +29,8 @@ public class UserController {
 
     private final UserService userService;
 
-    @Autowired //TODO : This autowired should not be required but we are skipping it for now
-    private AuthenticationManager authenticationManager;
+//    @Autowired //TODO : This autowired should not be required but we are skipping it for now
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
     public ResponseEntity<Response> saveUser(@RequestBody @Valid UserRequest userRequest, HttpServletRequest httpServletRequest)
