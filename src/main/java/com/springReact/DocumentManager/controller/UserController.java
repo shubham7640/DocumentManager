@@ -8,11 +8,16 @@ import com.springReact.DocumentManager.util.RequestUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 
@@ -24,6 +29,9 @@ public class UserController {
 
     private final UserService userService;
 
+    @Autowired //TODO : This autowired should not be required but we are skipping it for now
+    private AuthenticationManager authenticationManager;
+
     @PostMapping("/register")
     public ResponseEntity<Response> saveUser(@RequestBody @Valid UserRequest userRequest, HttpServletRequest httpServletRequest)
     {
@@ -33,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/verify/account")
-    public ResponseEntity<Response> saveUser(@RequestParam("token") String token, HttpServletRequest httpServletRequest)
+    public ResponseEntity<Response> verifyAccount(@RequestParam("token") String token, HttpServletRequest httpServletRequest)
     {
         try {
             userService.verifyAccountToken(token);
@@ -45,10 +53,31 @@ public class UserController {
         }
     }
 
+
     private URI getUri()
     {
         return URI.create("");
     }
 
+    @GetMapping("/testagain")
+    public ResponseEntity<Response> testagain()
+    {
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/test")
+    public ResponseEntity<Response> test()
+    {
+        return ResponseEntity.ok().build();
+    }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserRequest userRequest)
+    {
+        //When user request comes to controller it's still un-authenticated, so we'll call unauthenticated method
+        //so that user can be verifiedl
+        //Instead of authenticated/unauthenticated method we can directly use UsernamePasswordAuthenticationToken constructor as well
+        UsernamePasswordAuthenticationToken unauthenticated = UsernamePasswordAuthenticationToken.unauthenticated(userRequest.getEmail(), userRequest.getPassword());
+        Authentication authentication =authenticationManager.authenticate(unauthenticated);
+        return ResponseEntity.ok().body(Map.of("user",authentication));
+    }
 }
