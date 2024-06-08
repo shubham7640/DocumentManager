@@ -8,7 +8,7 @@ import com.springReact.DocumentManager.util.RequestUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,8 +29,8 @@ public class UserController {
 
     private final UserService userService;
 
-//    @Autowired //TODO : This autowired should not be required but we are skipping it for now
-    private final AuthenticationManager authenticationManager;
+//  Authentication has been moved to project's filter class
+//    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
     public ResponseEntity<Response> saveUser(@RequestBody @Valid UserRequest userRequest, HttpServletRequest httpServletRequest)
@@ -70,14 +70,17 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserRequest userRequest)
-    {
-        //When user request comes to controller it's still un-authenticated, so we'll call unauthenticated method
-        //so that user can be verifiedl
-        //Instead of authenticated/unauthenticated method we can directly use UsernamePasswordAuthenticationToken constructor as well
-        UsernamePasswordAuthenticationToken unauthenticated = UsernamePasswordAuthenticationToken.unauthenticated(userRequest.getEmail(), userRequest.getPassword());
-        Authentication authentication =authenticationManager.authenticate(unauthenticated);
-        return ResponseEntity.ok().body(Map.of("user",authentication));
-    }
+    // The authentication mechanism has been moved to project's filter class so that
+    // requests can be intercepted and authenticated there separately
+
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody UserRequest userRequest)
+//    {
+//        //When user request comes to controller it's still un-authenticated, so we'll call unauthenticated method
+//        //so that user can be verifiedl
+//        //Instead of authenticated/unauthenticated method we can directly use UsernamePasswordAuthenticationToken constructor as well
+//        UsernamePasswordAuthenticationToken unauthenticated = UsernamePasswordAuthenticationToken.unauthenticated(userRequest.getEmail(), userRequest.getPassword());
+//        Authentication authentication =authenticationManager.authenticate(unauthenticated);
+//        return ResponseEntity.ok().body(Map.of("user",authentication));
+//    }
 }

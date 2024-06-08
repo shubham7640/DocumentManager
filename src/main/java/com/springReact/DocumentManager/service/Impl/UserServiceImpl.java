@@ -1,11 +1,14 @@
 package com.springReact.DocumentManager.service.Impl;
 
+import com.springReact.DocumentManager.cache.CacheStore;
+import com.springReact.DocumentManager.domain.RequestContext;
 import com.springReact.DocumentManager.entity.ConfirmationEntity;
 import com.springReact.DocumentManager.entity.CredentialEntity;
 import com.springReact.DocumentManager.entity.RoleEntity;
 import com.springReact.DocumentManager.entity.UserEntity;
 import com.springReact.DocumentManager.enumeration.Authority;
 import com.springReact.DocumentManager.enumeration.EventType;
+import com.springReact.DocumentManager.enumeration.LoginType;
 import com.springReact.DocumentManager.event.UserEvent;
 import com.springReact.DocumentManager.exception.ApiException;
 import com.springReact.DocumentManager.repository.ConfirmationRepository;
@@ -22,6 +25,7 @@ import org.springframework.context.ApplicationEventPublisher;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -51,6 +55,9 @@ public class UserServiceImpl implements UserService {
 //    }
 
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    //Please note here we are Autowiring using name
+    private final CacheStore<String,Integer> userLoginCache;
 
     @Override
     public void createUser(String firstname, String lastName, String email, String password) {
@@ -95,5 +102,34 @@ public class UserServiceImpl implements UserService {
         return UserUtil.createuserEntity(firstName,lastName,email,role);
     }
 
+    @Override
+    public void updateLoginAttempt(String email, LoginType loginType) {
+        var userEntity = getUserEntityByEmail(email);
+        RequestContext.setUserId(userEntity.getId());
+        switch (loginType){
+            case LOGIN_ATTEMPT -> {
+                if(userLoginCache.get(userEntity.getEmail())==null) {
+                    //Please note if email doesn't exist in cache means no login attempt was made in last 15 mins,
+                    // so we can allow the user attempt to login
+                    userEntity.setLoginAttempts(0);
+                    userEntity.setAccountNonLocked(true);
+                }
+                userEntity.setLoginAttempts(userEntity.getLoginAttempts()+1);
+                userLoginCache.put(userEntity.getEmail(),userEntity.getLoginAttempts());
+                if(userLoginCache.get(userEntity.getEmail())>5) {
+                    userEntity.setAccountNonLocked(false);
+                }
+
+            }
+            case LOGIN_SUCCESS -> {
+                userEntity.setAccountNonLocked(true);
+                userEntity.setLoginAttempts(0);
+                userEntity.setLastLogin(LocalDateTime.now());
+                userLoginCache.evict(userEntity.getEmail());
+
+            }
+        }
+        userRepository.save(userEntity);
+    }
 
 }
