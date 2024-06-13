@@ -14,4 +14,12 @@ public class Constants {
     public static final String MANAGER_AUTHORITIES = "document:create,document:read,document:update,document:delete";
 
     public static final String EMPTY_STRING = "";
+
+    public static final String EMPTY_VALUE = "empty";
+
+    public static final String AUTHORITIES = "authorities_";
+
+    public static final String ROLE = "role";
+
+    public static final String GET_ARRAYS_LLC = "GET_ARRAYS_LLC";.GET_ARRAYS_LLC = "GET_ARRAYS_LLC";
 }
