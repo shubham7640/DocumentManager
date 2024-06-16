@@ -125,21 +125,41 @@ public class JwtServiceImpl extends JwtConfiguration implements JwtService  {
 
     @Override
     public String createToken(User user, Function<Token, String> tokenFunction) {
-        return "";
+        var token = Token.builder().access(buildToken.apply(user,TokenType.ACCESS)).refresh(buildToken.apply(user,TokenType.REFRESH)).build();
+        return tokenFunction.apply(token);
     }
 
     @Override
-    public Optional<String> extractToken(HttpServletRequest request, String tokenType) {
-        return Optional.empty();
+    public Optional<String> extractToken(HttpServletRequest request, String cookieName) {
+        return extractToken.apply(request,cookieName);
     }
 
     @Override
     public void addCookie(HttpServletResponse response, User user, TokenType tokenType) {
-
+        addCookie.accept(response,user,tokenType);
     }
 
     @Override
     public <T> T getTokenData(String token, Function<TokenData, T> tokenFunction) {
-        return null;
+
+        return tokenFunction.apply(
+                TokenData.builder()
+                        .valid(Objects.equals(userService.getUserByUserId(subject.apply(token)).getUserId(),claimsFunction.apply(token)))
+                        .authorities(authorities.apply(token))
+                        .claims(claimsFunction.apply(token))
+                        .user(userService.getUserByUserId(subject.apply(token)))
+                        .build()
+
+        );
+    }
+
+    @Override
+    public void removeCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
+        var optionalCookie = extractCookie.apply(request,cookieName);
+        if(optionalCookie.isPresent()){
+            var cookie = optionalCookie.get();
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
     }
 }

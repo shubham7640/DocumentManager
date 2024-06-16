@@ -21,5 +21,7 @@ public class Constants {
 
     public static final String ROLE = "role";
 
-    public static final String GET_ARRAYS_LLC = "GET_ARRAYS_LLC";.GET_ARRAYS_LLC = "GET_ARRAYS_LLC";
+    public static final String GET_ARRAYS_LLC = "GET_ARRAYS_LLC";
+
+    public static final String LOGIN_PATH = "/user/login";
 }
