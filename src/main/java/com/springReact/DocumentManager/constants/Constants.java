@@ -24,4 +24,7 @@ public class Constants {
     public static final String GET_ARRAYS_LLC = "GET_ARRAYS_LLC";
 
     public static final String LOGIN_PATH = "/user/login";
+
+    public static final int NINETY_DAYS = 90;
+    public static final int STRENGTH = 12;
 }

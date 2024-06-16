@@ -2,6 +2,7 @@ package com.springReact.DocumentManager.service.Impl;
 
 import com.springReact.DocumentManager.cache.CacheStore;
 import com.springReact.DocumentManager.domain.RequestContext;
+import com.springReact.DocumentManager.dto.User;
 import com.springReact.DocumentManager.entity.ConfirmationEntity;
 import com.springReact.DocumentManager.entity.CredentialEntity;
 import com.springReact.DocumentManager.entity.RoleEntity;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional(rollbackOn = Exception.class)
@@ -130,6 +132,28 @@ public class UserServiceImpl implements UserService {
             }
         }
         userRepository.save(userEntity);
+    }
+
+    @Override
+    public User getUserByUserId(String userId) {
+        var userEntity = userRepository.findUserEntityByUserId(userId).orElseThrow(()-> new ApiException("Unable to find User by ID"));
+        return UserUtil.fromUserEntity(userEntity,userEntity.getRole(),getUserCredentialsById(userEntity.getId()));
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        var userEntity = getUserEntityByEmail(email);
+
+
+        return UserUtil.fromUserEntity(userEntity,userEntity.getRole(),getUserCredentialsById(userEntity.getId()));
+    }
+
+
+
+    @Override
+    public CredentialEntity getUserCredentialsById(Long userId) {
+        var credentialEntity = credentialRepository.getCredentialsByUserEntityId(userId);
+        return credentialEntity.orElseThrow(()-> new ApiException("Unable to find User credentials"));
     }
 
 }
